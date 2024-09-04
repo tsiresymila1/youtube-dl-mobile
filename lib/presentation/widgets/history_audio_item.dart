@@ -1,0 +1,167 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:open_file_manager/open_file_manager.dart';
+import 'package:youtube_dl/core/extensions/duration.dart';
+import 'package:youtube_dl/core/models/video_item/video_item.dart';
+import 'package:youtube_dl/presentation/bloc/history/history_bloc.dart';
+
+class HistoryAudioItem extends StatefulWidget {
+  final VideoItem video;
+
+  const HistoryAudioItem({super.key, required this.video});
+
+  @override
+  State<HistoryAudioItem> createState() => _HistoryAudioItemState();
+}
+
+class _HistoryAudioItemState extends State<HistoryAudioItem> {
+  final player = AudioPlayer();
+  Duration? duration;
+  Duration? position;
+  bool isPlaying = false;
+  bool isLoading = true;
+  bool isDragging = false;
+
+  @override
+  void initState() {
+    super.initState();
+    player.setFilePath(widget.video.path).then((d) {
+      setState(() {
+        duration = d;
+        isLoading = false;
+      });
+      player.playbackEventStream.listen((event) {
+        if (!isDragging) {
+          setState(() {
+            position = event.bufferedPosition;
+          });
+        }
+      });
+    });
+
+    player.playerStateStream.listen((state) {
+      if (state.playing != isPlaying) {
+        setState(() {
+          isPlaying = state.playing;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  void _togglePlayPause() {
+    if (isPlaying) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  }
+
+  void _seekTo(Duration newPosition) {
+    player.seek(newPosition);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+              height: 100,
+              child: Visibility(
+                visible: !isLoading,
+                replacement: const Center(
+                  child: SpinKitThreeBounce(
+                    size: 40,
+                    color: Colors.redAccent,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Play/Pause Button
+                    IconButton(
+                      icon: Icon(
+                        isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: 32,
+                      ),
+                      onPressed: _togglePlayPause,
+                    ),
+                    // Progress Bar
+                    Slider(
+                      value: (position?.inMilliseconds ?? 0).toDouble(),
+                      min: 0.0,
+                      max: (duration?.inMilliseconds ?? 1).toDouble(),
+                      onChanged: (value) {
+                        setState(() {
+                          isDragging = true;
+                          position = Duration(milliseconds: value.toInt());
+                        });
+                      },
+                      onChangeEnd: (value) {
+                        setState(() {
+                          isDragging = false;
+                        });
+                        _seekTo(Duration(milliseconds: value.toInt()));
+                      },
+                    ),
+                    // Display time
+                    Text(
+                      "${position?.toString().split('.').first ?? '00:00:00'} / ${duration?.toString().split('.').first ?? '00:00:00'}",
+                      style: const TextStyle(fontSize: 12.0),
+                    ),
+                  ],
+                ),
+              )),
+          ListTile(
+            title: Text(
+              "${widget.video.video.title} - ${widget.video.video.duration != null ? widget.video.video.duration?.formatDuration() : ''}",
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.folder),
+                  onPressed: () {
+                    openFileManager(
+                      androidConfig:
+                          AndroidConfig(folderType: FolderType.recent),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: () {
+                    final historyBloc = context.read<HistoryBloc>();
+                    historyBloc
+                        .add(RemoveHistoryEvent(uuid: widget.video.uuid));
+                  },
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            subtitle: Text(
+              widget.video.video.description.replaceRange(
+                  min(140, widget.video.video.description.length), null, '...'),
+              style: const TextStyle(fontSize: 12.0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
