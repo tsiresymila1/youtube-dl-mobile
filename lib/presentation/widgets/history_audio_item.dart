@@ -18,14 +18,13 @@ class HistoryAudioItem extends StatefulWidget {
   State<HistoryAudioItem> createState() => _HistoryAudioItemState();
 }
 
-class _HistoryAudioItemState extends State<HistoryAudioItem> {
+class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBindingObserver {
   final player = AudioPlayer();
   Duration? duration;
   Duration? position;
   bool isPlaying = false;
   bool isLoading = true;
   bool isDragging = false;
-
   @override
   void initState() {
     super.initState();
@@ -50,12 +49,27 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> {
         });
       }
     });
+    player.positionStream.listen((event) {
+      setState(() {
+        position = event;
+      });
+    });
   }
 
   @override
   void dispose() {
     player.dispose();
+    setState(() {
+      position = null;
+    });
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      player.stop();
+    }
   }
 
   void _togglePlayPause() {
@@ -77,7 +91,7 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-              height: 100,
+              height: 140,
               child: Visibility(
                 visible: !isLoading,
                 replacement: const Center(
@@ -98,20 +112,20 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> {
                     ),
                     // Progress Bar
                     Slider(
-                      value: (position?.inMilliseconds ?? 0).toDouble(),
+                      value: min(duration?.inMilliseconds ?? 0, position?.inMilliseconds ?? 0).toDouble(),
                       min: 0.0,
-                      max: (duration?.inMilliseconds ?? 1).toDouble(),
+                      max: (duration?.inMilliseconds  ?? 1).toDouble(),
                       onChanged: (value) {
                         setState(() {
                           isDragging = true;
-                          position = Duration(milliseconds: value.toInt());
+                          position = Duration(milliseconds: min(duration?.inMilliseconds ?? 1,value.toInt()));
                         });
                       },
                       onChangeEnd: (value) {
                         setState(() {
                           isDragging = false;
                         });
-                        _seekTo(Duration(milliseconds: value.toInt()));
+                        _seekTo(Duration(milliseconds: min(duration?.inMilliseconds ?? 1,value.toInt())));
                       },
                     ),
                     // Display time
