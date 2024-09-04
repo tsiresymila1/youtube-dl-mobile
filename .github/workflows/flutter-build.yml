@@ -38,6 +38,6 @@ jobs:
         with:
           artifacts: build/app/outputs/flutter-apk/app-release.apk
           tag: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true

@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_audio/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
@@ -97,23 +96,23 @@ class _YtModalSheetQualitySelectorState
               },
             ),
             const Gap(24.0),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Switch(
-            //       value: mp3,
-            //       activeColor: Colors.red,
-            //       onChanged: (bool value) {
-            //         setState(() {
-            //           mp3 = value;
-            //         });
-            //       },
-            //     ),
-            //     const Gap(12),
-            //     const Text("Only mp3")
-            //   ],
-            // ),
-            // const Gap(24.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Switch(
+                  value: mp3,
+                  activeColor: Colors.red,
+                  onChanged: (bool value) {
+                    setState(() {
+                      mp3 = value;
+                    });
+                  },
+                ),
+                const Gap(12),
+                const Text("Only mp3")
+              ],
+            ),
+            const Gap(24.0),
             ElevatedButton(
               onPressed: () async {
                 final historyBloc = context.read<HistoryBloc>();
@@ -134,7 +133,6 @@ class _YtModalSheetQualitySelectorState
                 final audioOnly = widget.manifest.audio
                     .firstWhere((q) => q.container.name.toLowerCase() == "mp4");
                 final audioUrl = audioOnly.url.toString();
-                logger.i(audioUrl);
                 final futures = [
                   FileDownloader.downloadFile(
                       url: audioUrl,
@@ -238,7 +236,7 @@ class _YtModalSheetQualitySelectorState
                         logger.w(await s.getAllLogsAsString());
                       });
                       FFmpegKit.execute(
-                              "-i ${audio?.path} -c:a aac -strict experimental -shortest -b:a 192k $outputPath -y")
+                              "-i ${audio?.path} -c:a mp3 -b:a 192k $outputPath -y")
                           .then((session) async {
                         logger.i(session.getCommand());
                         final returnCode = await session.getReturnCode();
