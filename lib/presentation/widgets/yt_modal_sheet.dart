@@ -131,9 +131,9 @@ class _YtModalSheetQualitySelectorState
                     backgroundColor: Colors.green,
                     textColor: Colors.white,
                     fontSize: 14.0);
-                final audioOnly = widget.manifest.audio.firstWhere((q) => q.container.name.toLowerCase() == "mp4");
-                final audioUrl = audioOnly.url
-                    .toString();
+                final audioOnly = widget.manifest.audio
+                    .firstWhere((q) => q.container.name.toLowerCase() == "mp4");
+                final audioUrl = audioOnly.url.toString();
                 logger.i(audioUrl);
                 final futures = [
                   FileDownloader.downloadFile(
@@ -166,8 +166,8 @@ class _YtModalSheetQualitySelectorState
                     if (!downloadDir.existsSync()) {
                       downloadDir.createSync(recursive: true);
                     }
-                    final outputPath = _getOutputFilepath(
-                        downloadDir.path, filename,mp3 ? 'mp3': info.container.name);
+                    final outputPath = _getOutputFilepath(downloadDir.path,
+                        filename, mp3 ? 'mp3' : info.container.name);
                     if (files.length == 2) {
                       final audio = files.firstWhere((f) =>
                           f != null && f.path.contains("Youtube_DL_Audio_"));
@@ -183,7 +183,7 @@ class _YtModalSheetQualitySelectorState
                           textColor: Colors.greenAccent.shade100,
                           fontSize: 14.0);
                       FFmpegKit.execute(
-                              '-i ${video?.path} -i ${audio?.path}  -c:v copy -c:a aac -strict experimental -shortest $outputPath -y')
+                              '-i ${video?.path} -i ${audio?.path}  -c:v copy -c:a ${info.container.name == "webm" ? 'opus' : 'aac'} -strict experimental -shortest $outputPath -y')
                           .then((session) async {
                         logger.i(outputPath);
                         final returnCode = await session.getReturnCode();
@@ -234,7 +234,7 @@ class _YtModalSheetQualitySelectorState
                     } else {
                       logger.i(files);
                       final audio = files.first;
-                      FFmpegKit.execute("-codecs").then((s)async {
+                      FFmpegKit.execute("-codecs").then((s) async {
                         logger.w(await s.getAllLogsAsString());
                       });
                       FFmpegKit.execute(
