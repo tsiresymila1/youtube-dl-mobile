@@ -69,6 +69,10 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
               useMaterial3: true,
+              textTheme: const TextTheme(
+                bodySmall: TextStyle(fontSize: 14.0),
+                bodyMedium: TextStyle(fontSize: 14.0),
+              ),
             ).copyWith(),
             routerConfig: router,
           ),

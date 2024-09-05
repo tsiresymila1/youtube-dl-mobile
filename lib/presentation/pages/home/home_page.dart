@@ -28,12 +28,11 @@ class HomePage extends StatelessWidget {
                 color: Colors.redAccent,
                 size: 40,
               ),
-              Gap(20),
-              Text("Youtube DL"),
+              Text("YoutubeDL",style: TextStyle(fontWeight: FontWeight.bold),),
             ],
           ),
           elevation: 4,
-          scrolledUnderElevation: 4,
+          scrolledUnderElevation: 0,
           actions: [
             IconButton(
                 onPressed: () {
@@ -73,49 +72,46 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-          child: Visibility(
-            visible: mutation.isMutating,
+        body: Visibility(
+          visible: mutation.isMutating,
+          replacement: Visibility(
+            visible: mutation.hasData && mutation.data!.isNotEmpty,
             replacement: Visibility(
-              visible: mutation.hasData && mutation.data!.isNotEmpty,
-              replacement: Visibility(
-                visible: mutation.hasError,
-                replacement: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset("assets/nodata.png"),
-                      const Gap(20),
-                      const Text("No data")
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    mutation.error.toString().contains("SocketException")
-                        ? "Check your internet connection!!"
-                        : mutation.error.toString(),
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.justify,
-                  ),
+              visible: mutation.hasError,
+              replacement: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset("assets/nodata.png"),
+                    const Gap(20),
+                    const Text("No data")
+                  ],
                 ),
               ),
-              child: ListView.builder(
-                  itemCount: mutation.data?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final video = mutation.data![index];
-                    return Card(
-                      child: YTItem(video: video),
-                    );
-                  }),
+              child: Center(
+                child: Text(
+                  mutation.error.toString().contains("SocketException")
+                      ? "Check your internet connection!!"
+                      : mutation.error.toString(),
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
             ),
             child: ListView.builder(
-                itemCount: 5,
+                itemCount: mutation.data?.length ?? 0,
                 itemBuilder: (context, index) {
-                  return const YTShimmerItem();
+                  final video = mutation.data![index];
+                  return Card(
+                    child: YTItem(video: video),
+                  );
                 }),
           ),
+          child: ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) {
+                return const YTShimmerItem();
+              }),
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(

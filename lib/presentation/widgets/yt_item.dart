@@ -14,19 +14,39 @@ class YTItem extends StatelessWidget {
 
   const YTItem({super.key, required this.video});
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        YoutubePlayer(
-            controller: YoutubePlayerController(
-                initialVideoId: video.id.value,
-                flags: const YoutubePlayerFlags(autoPlay: false, mute: false))),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Container(
+            height: 160,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8)
+            ),
+            child: YoutubePlayer(
+              progressIndicatorColor: Colors.redAccent,
+                progressColors: const ProgressBarColors(
+                  playedColor: Colors.red,
+                  handleColor: Colors.redAccent,
+                ),
+                controller: YoutubePlayerController(
+                    initialVideoId: video.id.value,
+                    flags: const YoutubePlayerFlags(autoPlay: false, mute: false))),
+          ),
+        ),
         ListTile(
-          title: Text("${video.title} - ${video.duration != null ? video.duration!.formatDuration(): ''}"),
+          style: ListTileStyle.list,
+          dense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+          title: Text(
+            "${video.title} - ${video.duration != null ? video.duration!.formatDuration() : ''}",
+            style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+          ),
           leading: CircleAvatar(
+            radius: 15,
             backgroundImage: NetworkImage(video.thumbnails.highResUrl),
           ),
           trailing: IconButton(
@@ -39,13 +59,16 @@ class YTItem extends StatelessWidget {
                   .streamsClient
                   .getManifest(video.id, fullManifest: true)
                   .then((manifest) {
-                Navigator.of(context,
-                    rootNavigator: true)
-                    .pop();
-                showModalBottomSheet(context: context, builder: (ctx){
-                  return YtModalSheetQualitySelector(manifest: manifest, video: video,);
-                });
-              }).catchError((_){
+                Navigator.of(context, rootNavigator: true).pop();
+                showModalBottomSheet(
+                    context: context,
+                    builder: (ctx) {
+                      return YtModalSheetQualitySelector(
+                        manifest: manifest,
+                        video: video,
+                      );
+                    });
+              }).catchError((_) {
                 loaderBloc.add(LoaderEventStop());
               });
             },
@@ -55,13 +78,14 @@ class YTItem extends StatelessWidget {
             ),
           ),
         ),
-        ListTile(
-          subtitle: Text(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal:12.0, vertical: 4),
+          child: Text(
             video.description
                 .replaceRange(min(140, video.description.length), null, '...'),
             style: const TextStyle(fontSize: 12.0),
           ),
-        ),
+        )
       ],
     );
   }

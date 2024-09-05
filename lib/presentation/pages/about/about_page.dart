@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -20,43 +23,68 @@ class AboutPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.play_circle,
-              color: Colors.redAccent,
-              size: 40,
+            Text(
+              "About",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Gap(20),
-            Text("About"),
           ],
         ),
         elevation: 4,
         scrolledUnderElevation: 4,
       ),
-      body: const Center(
+      body:  Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Youtube DL v0.1",
+            const Text("Youtube DL v0.1",
                 style: TextStyle(
                     color: Colors.redAccent,
                     fontSize: 22,
                     fontWeight: FontWeight.bold)),
-            Gap(12),
-            Text(
+            const Gap(12),
+            const Text(
               "Developed by :",
               style: TextStyle(color: Colors.redAccent),
             ),
-            Gap(12),
-            Text(
+            const Gap(12),
+            const Text(
               "Tsiresy Milà.",
-              style: TextStyle(fontSize: 15,),
+              style: TextStyle(
+                fontSize: 15,
+              ),
             ),
-            Gap(6),
-            Text(
-              "tsiresymila@gmail.com.",
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            const Gap(6),
+            InkWell(
+              onTap: (){
+                final uri = Uri.parse("mailto:tsiresymila@gmail.com");
+                launchUrl(uri).then((_){});
+              },
+              child: const Text(
+                "tsiresymila@gmail.com",
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.red),
+              ),
             ),
-
+            const Gap(6),
+            InkWell(
+              onTap: (){
+                final uri = Uri.parse("tel:+261342083574");
+                launchUrl(uri).then((_){});
+              },
+              child: const Text(
+                "0342083574",
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.red),
+              ),
+            ),
           ],
         ),
       ),

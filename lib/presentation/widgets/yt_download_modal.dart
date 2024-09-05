@@ -32,9 +32,9 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Download video',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                     onPressed: () {
@@ -59,6 +59,7 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
                   borderRadius: BorderRadius.circular(20.0),
                   borderSide: BorderSide.none,
                 ),
+                hintStyle: TextStyle(fontSize: 13, color: Colors.black.withAlpha(110)),
                 filled: true,
                 fillColor: Colors.white,
                 prefixIcon: const Icon(
@@ -71,7 +72,12 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ElevatedButton(
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // Set the radius here
+                    ),
+                  ),
                   onPressed: () {
                     final RegExp youtubeRegex = RegExp(
                       r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$|^[a-zA-Z0-9_-]{11}$',

@@ -36,12 +36,11 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
       player.playbackEventStream.listen((event) {
         if (!isDragging) {
           setState(() {
-            position = event.bufferedPosition;
+            position = event.updatePosition;
           });
         }
       });
     });
-
     player.playerStateStream.listen((state) {
       if (state.playing != isPlaying) {
         setState(() {
@@ -137,8 +136,14 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
                 ),
               )),
           ListTile(
+            style: ListTileStyle.list,
+            dense: true,
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
             title: Text(
               "${widget.video.video.title} - ${widget.video.video.duration != null ? widget.video.video.duration?.formatDuration() : ''}",
+              style:
+              const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -167,13 +172,14 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
               ],
             ),
           ),
-          ListTile(
-            subtitle: Text(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0).copyWith(bottom: 12),
+            child: Text(
               widget.video.video.description.replaceRange(
                   min(140, widget.video.video.description.length), null, '...'),
               style: const TextStyle(fontSize: 12.0),
             ),
-          ),
+          )
         ],
       ),
     );

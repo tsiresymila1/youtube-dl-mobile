@@ -25,48 +25,39 @@ class HistoryPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.play_circle,
-              color: Colors.redAccent,
-              size: 40,
-            ),
-            Gap(20),
-            Text("Downloads"),
+            Text("Downloads", style: TextStyle(fontWeight: FontWeight.bold),),
           ],
         ),
         elevation: 4,
         scrolledUnderElevation: 4,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
-        child: BlocBuilder<HistoryBloc, HistoryState>(
-          bloc: sl.get<HistoryBloc>(),
-          builder: (context, state) {
-            return Visibility(
-              visible: state.videos.isNotEmpty,
-              replacement: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset("assets/nodata.png"),
-                    const Gap(20),
-                    const Text("No data")
-                  ],
-                ),
+      body: BlocBuilder<HistoryBloc, HistoryState>(
+        bloc: sl.get<HistoryBloc>(),
+        builder: (context, state) {
+          return Visibility(
+            visible: state.videos.isNotEmpty,
+            replacement: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset("assets/nodata.png"),
+                  const Gap(20),
+                  const Text("No data")
+                ],
               ),
-              child: ListView.builder(
-                  itemCount: state.videos.length,
-                  itemBuilder: (ctx, index) {
-                    final historyItem = state.videos[index];
-                    return historyItem.isMp3
-                        ? HistoryAudioItem(video: historyItem)
-                        : HistoryItem(
-                            video: historyItem,
-                          );
-                  }),
-            );
-          },
-        ),
+            ),
+            child: ListView.builder(
+                itemCount: state.videos.length,
+                itemBuilder: (ctx, index) {
+                  final historyItem = state.videos[index];
+                  return historyItem.isMp3
+                      ? HistoryAudioItem(video: historyItem)
+                      : HistoryItem(
+                          video: historyItem,
+                        );
+                }),
+          );
+        },
       ),
     );
   }

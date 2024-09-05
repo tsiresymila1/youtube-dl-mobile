@@ -49,39 +49,58 @@ class _HistoryItemState extends State<HistoryItem> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 1,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Visibility(
-            visible: chewieController != null,
-            replacement: const SizedBox(
-              height: 250,
-              child: Center(
-                child: SizedBox(
-                    height: 80,
-                    child: SpinKitThreeBounce(
-                      color: Colors.redAccent,
-                    )),
+              visible: chewieController != null,
+              replacement: const SizedBox(
+                height: 250,
+                child: Center(
+                  child: SizedBox(
+                      height: 80,
+                      child: SpinKitThreeBounce(
+                        color: Colors.redAccent,
+                      )),
+                ),
               ),
-            ),
-            child: chewieController == null
-                ? const SizedBox.shrink()
-                : AspectRatio(
-                    aspectRatio: videoPlayerController.value.aspectRatio,
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: SizedBox(
-                          width: videoPlayerController.value.size.width ?? 0,
-                          height: videoPlayerController.value.size.height ?? 0,
-                          child: Chewie(
-                            controller: chewieController!,
-                          )),
-                    ),
-                  ),
-          ),
+              child: chewieController == null
+                  ? const SizedBox.shrink()
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Container(
+                        height: 160,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8)),
+                        child: AspectRatio(
+                          aspectRatio: videoPlayerController.value.aspectRatio,
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                                width:
+                                    videoPlayerController.value.size.width ?? 0,
+                                height:
+                                    videoPlayerController.value.size.height ??
+                                        0,
+                                child: Chewie(
+                                  controller: chewieController!,
+                                )),
+                          ),
+                        ),
+                      ),
+                    )),
           ListTile(
+            style: ListTileStyle.list,
+            dense: true,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
             title: Text(
-                "${widget.video.video.title} -  ${widget.video.video.duration != null ? widget.video.video.duration?.formatDuration() : ''}"),
+              "${widget.video.video.title} -  ${widget.video.video.duration != null ? widget.video.video.duration?.formatDuration() : ''}",
+              style:
+                  const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -101,19 +120,22 @@ class _HistoryItemState extends State<HistoryItem> {
                   ),
                   onPressed: () {
                     final historyBloc = context.read<HistoryBloc>();
-                    historyBloc.add(RemoveHistoryEvent(uuid: widget.video.uuid));
+                    historyBloc
+                        .add(RemoveHistoryEvent(uuid: widget.video.uuid));
                   },
                 ),
               ],
             ),
           ),
-          ListTile(
-            subtitle: Text(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0)
+                .copyWith(bottom: 12),
+            child: Text(
               widget.video.video.description.replaceRange(
                   min(140, widget.video.video.description.length), null, '...'),
               style: const TextStyle(fontSize: 12.0),
             ),
-          ),
+          )
         ],
       ),
     );
