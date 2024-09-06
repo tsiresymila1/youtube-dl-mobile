@@ -99,6 +99,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             child: ListView.builder(
+              primary: false,
                 itemCount: mutation.data?.length ?? 0,
                 itemBuilder: (context, index) {
                   final video = mutation.data![index];

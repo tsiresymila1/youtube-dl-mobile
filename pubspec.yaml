@@ -60,8 +60,8 @@ dependencies:
   permission_handler: ^11.3.1
   awesome_dialog: ^3.2.1
   just_audio: ^0.9.40
-  ffmpeg_kit_flutter_audio: ^6.0.3
   url_launcher: ^6.3.0
+  ffmpeg_kit_flutter_full: ^6.0.3
 
 dev_dependencies:
   flutter_test:

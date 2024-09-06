@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:ffmpeg_kit_flutter_audio/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_audio/return_code.dart';
+import 'package:ffmpeg_kit_flutter_full/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
