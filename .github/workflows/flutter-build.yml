@@ -44,7 +44,9 @@ jobs:
           echo "storeFile=$HOME/release-keystore.jks" >> android/key.properties
 
       - name: Build APK
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release 
+          flutter build bundle
 
       - name: Upload release APK to GitHub Release
         uses: ncipollo/release-action@v1
