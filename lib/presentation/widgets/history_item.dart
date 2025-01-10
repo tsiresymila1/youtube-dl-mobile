@@ -26,13 +26,13 @@ class _HistoryItemState extends State<HistoryItem> {
 
   @override
   void initState() {
-    videoPlayerController = VideoPlayerController.file(File(widget.video.path));
+    videoPlayerController = VideoPlayerController.file(File(widget.video.path),
+        videoPlayerOptions: VideoPlayerOptions());
     videoPlayerController.initialize().then((_) {
       chewieController = ChewieController(
         aspectRatio: videoPlayerController.value.aspectRatio,
         videoPlayerController: videoPlayerController,
         autoInitialize: true,
-        allowFullScreen: true,
       );
       setState(() {});
     });

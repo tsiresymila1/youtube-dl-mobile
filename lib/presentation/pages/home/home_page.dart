@@ -19,16 +19,25 @@ class HomePage extends StatelessWidget {
     }, builder: (context, mutation) {
       return Scaffold(
         appBar: AppBar(
-          title: const Row(
+          title: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 12,
             children: [
-              Icon(
-                Icons.play_circle,
-                color: Colors.redAccent,
-                size: 40,
+              Container(
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(8)),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
-              Text("YoutubeDL",style: TextStyle(fontWeight: FontWeight.bold),),
+              const Text(
+                "YoutubeDL",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           elevation: 4,
@@ -99,7 +108,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             child: ListView.builder(
-              primary: false,
+                primary: true,
                 itemCount: mutation.data?.length ?? 0,
                 itemBuilder: (context, index) {
                   final video = mutation.data![index];
@@ -115,9 +124,9 @@ class HomePage extends StatelessWidget {
               }),
         ),
         floatingActionButton: FloatingActionButton(
-          child: const Icon(
+          child: Icon(
             Icons.download_for_offline_outlined,
-            color: Colors.redAccent,
+            color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
             showDialog(

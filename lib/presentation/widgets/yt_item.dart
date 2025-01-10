@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:youtube_dl/core/extensions/duration.dart';
+import 'package:youtube_dl/core/log.dart';
 import 'package:youtube_dl/presentation/bloc/loader/loader_bloc.dart';
 import 'package:youtube_dl/presentation/widgets/yt_modal_sheet.dart';
 import 'package:youtube_dl/service_locator.dart';
@@ -25,7 +27,8 @@ class _YTItemState extends State<YTItem> {
   void initState() {
     controller = YoutubePlayerController(
         initialVideoId: widget.video.id.value,
-        flags: const YoutubePlayerFlags(autoPlay: false, mute: false));
+        flags: const YoutubePlayerFlags(
+            autoPlay: false, mute: false, enableCaption: true));
     super.initState();
   }
 
@@ -46,12 +49,15 @@ class _YTItemState extends State<YTItem> {
             height: 160,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: YoutubePlayer(
-                progressIndicatorColor: Colors.redAccent,
-                progressColors: const ProgressBarColors(
-                  playedColor: Colors.red,
-                  handleColor: Colors.redAccent,
-                ),
-                controller: controller),
+              bufferIndicator: SizedBox.shrink(),
+              showVideoProgressIndicator: false,
+              controller: controller,
+              bottomActions: [
+                CurrentPosition(),
+                ProgressBar(isExpanded: true),
+                FullScreenButton(),
+              ],
+            ),
           ),
         ),
         ListTile(
@@ -86,8 +92,21 @@ class _YTItemState extends State<YTItem> {
                         video: widget.video,
                       );
                     });
-              }).catchError((_) {
-                loaderBloc.add(LoaderEventStop());
+              }).catchError((err) {
+                logger.i(widget.video.url);
+                logger.e(err.toString());
+                AwesomeDialog(
+                  context: context,
+                  animType: AnimType.bottomSlide,
+                  dialogType: DialogType.noHeader,
+                  dismissOnBackKeyPress: false,
+                  dismissOnTouchOutside: false,
+                  title: "Error",
+                  desc: err.toString(),
+                  btnCancelOnPress: () {
+                    loaderBloc.add(LoaderEventStop());
+                  },
+                ).show();
               });
             },
             icon: const Icon(
