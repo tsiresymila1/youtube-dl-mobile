@@ -18,6 +18,12 @@ final class DownloadVideoInitEvent extends DownloadEvent {
       required this.video});
 }
 
+final class DownloadVideoDownloadingEvent extends DownloadEvent {
+  final Uuid uuid;
+
+  DownloadVideoDownloadingEvent({required this.uuid});
+}
+
 final class DownloadVideoFinishedEvent extends DownloadEvent {
   final Video video;
 
