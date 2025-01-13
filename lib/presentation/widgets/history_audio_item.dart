@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -5,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:open_file_manager/open_file_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_dl/core/extensions/duration.dart';
+import 'package:youtube_dl/core/log.dart';
 import 'package:youtube_dl/core/models/video_item/video_item.dart';
 import 'package:youtube_dl/presentation/bloc/history/history_bloc.dart';
 
@@ -18,13 +21,15 @@ class HistoryAudioItem extends StatefulWidget {
   State<HistoryAudioItem> createState() => _HistoryAudioItemState();
 }
 
-class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBindingObserver {
+class _HistoryAudioItemState extends State<HistoryAudioItem>
+    with WidgetsBindingObserver {
   final player = AudioPlayer();
   Duration? duration;
   Duration? position;
   bool isPlaying = false;
   bool isLoading = true;
   bool isDragging = false;
+
   @override
   void initState() {
     super.initState();
@@ -42,16 +47,22 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
       });
     });
     player.playerStateStream.listen((state) {
-      if (state.playing != isPlaying) {
-        setState(() {
-          isPlaying = state.playing;
-        });
-      }
+      setState(() {
+        isPlaying = state.playing;
+      });
     });
     player.positionStream.listen((event) {
-      setState(() {
-        position = event;
-      });
+      if (event == duration) {
+        player.stop();
+        player.seek(Duration());
+        setState(() {
+          position = Duration();
+        });
+      } else {
+        setState(() {
+          position = event;
+        });
+      }
     });
   }
 
@@ -90,18 +101,23 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-              height: 140,
               child: Visibility(
-                visible: !isLoading,
-                replacement: const Center(
-                  child: SpinKitThreeBounce(
-                    size: 40,
-                    color: Colors.redAccent,
-                  ),
-                ),
-                child: Column(
+            visible: !isLoading,
+            replacement: const Center(
+              child: SpinKitThreeBounce(
+                size: 40,
+                color: Colors.redAccent,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+              child: Container(
+                color: Colors.grey.withAlpha(20),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                child: Row(
+                  spacing: 12,
                   children: [
-                    // Play/Pause Button
                     IconButton(
                       icon: Icon(
                         isPlaying ? Icons.pause : Icons.play_arrow,
@@ -109,41 +125,53 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
                       ),
                       onPressed: _togglePlayPause,
                     ),
-                    // Progress Bar
-                    Slider(
-                      value: min(duration?.inMilliseconds ?? 0, position?.inMilliseconds ?? 0).toDouble(),
-                      min: 0.0,
-                      max: (duration?.inMilliseconds  ?? 1).toDouble(),
-                      onChanged: (value) {
-                        setState(() {
-                          isDragging = true;
-                          position = Duration(milliseconds: min(duration?.inMilliseconds ?? 1,value.toInt()));
-                        });
-                      },
-                      onChangeEnd: (value) {
-                        setState(() {
-                          isDragging = false;
-                        });
-                        _seekTo(Duration(milliseconds: min(duration?.inMilliseconds ?? 1,value.toInt())));
-                      },
-                    ),
-                    // Display time
                     Text(
-                      "${position?.toString().split('.').first ?? '00:00:00'} / ${duration?.toString().split('.').first ?? '00:00:00'}",
+                      position?.toString().split('.').first ?? '00:00:00',
+                      style: const TextStyle(fontSize: 12.0),
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: min(duration?.inMilliseconds ?? 0,
+                                position?.inMilliseconds ?? 0)
+                            .toDouble(),
+                        min: 0.0,
+                        max: (duration?.inMilliseconds ?? 1).toDouble(),
+                        onChanged: (value) {
+                          setState(() {
+                            isDragging = true;
+                            position = Duration(
+                                milliseconds: min(duration?.inMilliseconds ?? 1,
+                                    value.toInt()));
+                          });
+                        },
+                        onChangeEnd: (value) {
+                          setState(() {
+                            isDragging = false;
+                          });
+                          _seekTo(Duration(
+                              milliseconds: min(duration?.inMilliseconds ?? 1,
+                                  value.toInt())));
+                        },
+                      ),
+                    ),
+                    Text(
+                      duration?.toString().split('.').first ?? '00:00:00',
                       style: const TextStyle(fontSize: 12.0),
                     ),
                   ],
                 ),
-              )),
+              ),
+            ),
+          )),
           ListTile(
             style: ListTileStyle.list,
             dense: true,
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
             title: Text(
               "${widget.video.video.title} - ${widget.video.video.duration != null ? widget.video.video.duration?.formatDuration() : ''}",
               style:
-              const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                  const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -151,11 +179,19 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
               children: [
                 IconButton(
                   icon: const Icon(Icons.folder),
-                  onPressed: () {
+                  onPressed: () async {
+                    logger.i(widget.video.path);
                     openFileManager(
                       androidConfig:
-                          AndroidConfig(folderType: FolderType.recent),
+                          AndroidConfig(folderType: FolderType.download),
                     );
+                    // final uri = Uri.parse(
+                    //     "file://${File(widget.video.path).parent.path}");
+                    // if (await canLaunchUrl(uri)) {
+                    //   await launchUrl(uri);
+                    // } else {
+                    //   throw 'Could not open folder: $uri';
+                    // }
                   },
                 ),
                 IconButton(
@@ -173,7 +209,8 @@ class _HistoryAudioItemState extends State<HistoryAudioItem> with WidgetsBinding
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0).copyWith(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0)
+                .copyWith(bottom: 12),
             child: Text(
               widget.video.video.description.replaceRange(
                   min(140, widget.video.video.description.length), null, '...'),

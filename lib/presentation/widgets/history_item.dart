@@ -75,18 +75,9 @@ class _HistoryItemState extends State<HistoryItem> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: AspectRatio(
-                          aspectRatio: videoPlayerController.value.aspectRatio,
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: SizedBox(
-                                width:
-                                    videoPlayerController.value.size.width ?? 0,
-                                height:
-                                    videoPlayerController.value.size.height ??
-                                        0,
-                                child: Chewie(
-                                  controller: chewieController!,
-                                )),
+                          aspectRatio: chewieController?.aspectRatio?? 16.0/ 9.0,
+                          child: Chewie(
+                            controller: chewieController!,
                           ),
                         ),
                       ),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:youtube_dl/presentation/pages/about/about_page.dart';
 import 'package:youtube_dl/presentation/pages/history/history_page.dart';
 import 'package:youtube_dl/presentation/pages/home/home_page.dart';
+import 'package:youtube_dl/presentation/pages/yt_item/yt_item.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 final router = GoRouter(navigatorKey: navigatorKey, routes: [
@@ -24,6 +25,16 @@ final router = GoRouter(navigatorKey: navigatorKey, routes: [
             path: 'about',
             builder: (context, state) {
               return const AboutPage();
+            }),
+        GoRoute(
+            name: 'view',
+            path: 'view',
+            builder: (context, GoRouterState state) {
+              Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+              return YtItemView(
+                controller: extra['controller'],
+                video: extra['video'],
+              );
             })
       ]),
 ]);

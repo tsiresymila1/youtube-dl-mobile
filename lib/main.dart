@@ -1,4 +1,5 @@
 import 'package:fl_query/fl_query.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
@@ -14,8 +15,11 @@ import 'package:youtube_dl/service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: await getApplicationDocumentsDirectory());
+      storageDirectory: kIsWeb
+          ? HydratedStorage.webStorageDirectory
+          : await getTemporaryDirectory());
   FileDownloader.setLogEnabled(false);
   await QueryClient.initialize(
     cachePrefix: 'youtube_dl',
@@ -49,7 +53,7 @@ class MyApp extends StatelessWidget {
                       listener: (context, state) {
                         if (state is DownloadFinished) {
                           Fluttertoast.showToast(
-                              msg: "Downloaded ${state.video.title} ");
+                              msg: "Downloaded  at ${state.video.path} ");
                         }
                       }),
                   BlocListener<LoaderBloc, LoaderState>(
@@ -82,9 +86,9 @@ class MyApp extends StatelessWidget {
             },
             title: 'Youtube DL',
             theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF61A59)),
+              colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF5D77)),
               useMaterial3: true,
-              primaryColor: Color(0xFFF61A59),
+              primaryColor: Color(0xFFFF5D77),
               textTheme: const TextTheme(
                 bodySmall: TextStyle(fontSize: 14.0),
                 bodyMedium: TextStyle(fontSize: 14.0),

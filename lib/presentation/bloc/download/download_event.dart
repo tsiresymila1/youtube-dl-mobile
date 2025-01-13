@@ -25,7 +25,7 @@ final class DownloadVideoDownloadingEvent extends DownloadEvent {
 }
 
 final class DownloadVideoFinishedEvent extends DownloadEvent {
-  final Video video;
+  final VideoItem video;
 
   DownloadVideoFinishedEvent({required this.video});
 }

@@ -23,12 +23,14 @@ class DownloadBloc extends Bloc<DownloadEvent, DownloadState> {
             event.filename,
             event.name,
             event.mp3);
+        VideoItem item = VideoItem(
+            uuid: Uuid().v4(),
+            path: outputPath,
+            isMp3: event.mp3,
+            video: SerializableVideo.fromVideo(event.video));
         sl.get<HistoryBloc>().add(AddHistoryEvent(
-            video: VideoItem(
-                uuid: Uuid().v4(),
-                path: outputPath,
-                video: SerializableVideo.fromVideo(event.video))));
-        add(DownloadVideoFinishedEvent(video: event.video));
+            video: item));
+        add(DownloadVideoFinishedEvent(video: item));
       } catch (e) {
         logger.e(e);
       }

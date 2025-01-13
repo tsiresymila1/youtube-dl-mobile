@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:youtube_dl/core/log.dart';
 import 'package:youtube_dl/presentation/bloc/history/history_bloc.dart';
 import 'package:youtube_dl/presentation/widgets/history_audio_item.dart';
 import 'package:youtube_dl/presentation/widgets/history_item.dart';
@@ -50,6 +51,7 @@ class HistoryPage extends StatelessWidget {
                 itemCount: state.videos.length,
                 itemBuilder: (ctx, index) {
                   final historyItem = state.videos[index];
+                  logger.i(historyItem);
                   return historyItem.isMp3
                       ? HistoryAudioItem(video: historyItem)
                       : HistoryItem(

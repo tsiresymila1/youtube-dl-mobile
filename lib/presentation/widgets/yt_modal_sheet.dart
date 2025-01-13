@@ -158,7 +158,8 @@ class _YtModalSheetQualitySelectorState
         futures: futures,
         filename: filename,
         name: info.container.name,
-        mp3: mp3));
+        mp3: mp3)
+    );
     Navigator.of(context, rootNavigator: true).pop();
   }
 

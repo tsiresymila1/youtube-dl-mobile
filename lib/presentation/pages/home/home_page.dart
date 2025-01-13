@@ -112,9 +112,7 @@ class HomePage extends StatelessWidget {
                 itemCount: mutation.data?.length ?? 0,
                 itemBuilder: (context, index) {
                   final video = mutation.data![index];
-                  return Card(
-                    child: YTItem(video: video),
-                  );
+                  return YTItem(video: video, key: ValueKey(video.id),);
                 }),
           ),
           child: ListView.builder(
