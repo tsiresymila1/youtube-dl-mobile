@@ -5,7 +5,6 @@ import 'package:ffmpeg_kit_flutter_full_gpl/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'log.dart';
 
@@ -24,10 +23,9 @@ Future<void> _mergeAudioVideo(File audio, File video, String outputPath) async {
       "-i ${video.path} -i ${audio.path} -c:v libx264 -c:a aac -strict experimental $outputPath";
   await FFmpegKit.execute(command).then((session) async {
     final returnCode = await session.getReturnCode();
-    if (ReturnCode.isSuccess(returnCode)) {
-      audio.deleteSync();
-      video.deleteSync();
-    } else {
+    audio.deleteSync();
+    video.deleteSync();
+    if (!ReturnCode.isSuccess(returnCode)) {
       final logs = await session.getLogsAsString();
       logger.e("Merge failed: $logs");
       Fluttertoast.showToast(
@@ -66,10 +64,13 @@ Future<String> processDownload(
   String name,
   bool mp3,
 ) async {
-  final extD = await getExternalStorageDirectory();
-  final downloadDir = extD != null
-      ? Directory("${extD.path}/Downloads")
-      : await getDownloadsDirectory() ?? await getApplicationCacheDirectory();
+  final downloadDir = Directory('/storage/emulated/0/Download');
+  if (!downloadDir.existsSync()) {
+    downloadDir.createSync(recursive: true);
+  }
+  // final downloadDir =
+  //     await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+  logger.i(downloadDir.path);
   final downloadFutures = futures.map((item) {
     return FileDownloader.downloadFile(
         url: item['url'],

@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_dl/presentation/bloc/download/download_bloc.dart';
 import 'package:youtube_dl/presentation/bloc/history/history_bloc.dart';
 import 'package:youtube_dl/presentation/bloc/loader/loader_bloc.dart';
@@ -14,7 +15,6 @@ import 'package:youtube_dl/router.dart';
 import 'package:youtube_dl/service_locator.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: kIsWeb
@@ -24,9 +24,15 @@ void main() async {
   await QueryClient.initialize(
     cachePrefix: 'youtube_dl',
   );
-
+  await requestStoragePermission();
   setupDependency();
   runApp(const MyApp());
+}
+
+Future<void> requestStoragePermission() async {
+  if (!(await Permission.manageExternalStorage.request().isGranted)) {
+    await requestStoragePermission();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -53,7 +59,8 @@ class MyApp extends StatelessWidget {
                       listener: (context, state) {
                         if (state is DownloadFinished) {
                           Fluttertoast.showToast(
-                              msg: "Downloaded  at ${state.video.path} ");
+                              msg: "Downloaded  at ${state.video.path} ",
+                              toastLength: Toast.LENGTH_LONG);
                         }
                       }),
                   BlocListener<LoaderBloc, LoaderState>(
