@@ -56,7 +56,12 @@ class _HistoryItemState extends State<HistoryItem> {
 
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: isDeleted 
+            ? BorderSide(color: colorScheme.error.withValues(alpha: 0.5), width: 1)
+            : BorderSide.none,
+      ),
       color: theme.cardColor,
       child: InkWell(
         onTap: isDownloading || isDeleted

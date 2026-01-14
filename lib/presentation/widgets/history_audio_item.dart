@@ -113,12 +113,18 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
   @override
   Widget build(BuildContext context) {
     final isFinished = widget.video.status == VideoStatus.finished;
+    final isDeleted = isFinished && !File(widget.video.path).existsSync();
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: isDeleted 
+            ? BorderSide(color: colorScheme.error.withValues(alpha: 0.5), width: 1)
+            : BorderSide.none,
+      ),
       color: theme.cardColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -126,7 +132,7 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
           children: [
             Row(
               children: [
-                _buildAlbumArt(isFinished, theme),
+                _buildAlbumArt(isFinished, isDeleted, theme),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -143,13 +149,17 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isFinished
-                            ? widget.video.video.author
-                            : _getStatusText(widget.video.status),
+                        isDeleted 
+                            ? "file_removed".tr()
+                            : isFinished
+                                ? widget.video.video.author
+                                : _getStatusText(widget.video.status),
                         style: theme.textTheme.bodySmall?.copyWith(
-                              color: isFinished
-                                  ? colorScheme.onSurfaceVariant
-                                  : colorScheme.primary,
+                              color: isDeleted
+                                  ? colorScheme.error
+                                  : isFinished
+                                      ? colorScheme.onSurfaceVariant
+                                      : colorScheme.primary,
                               fontWeight:
                                   isFinished ? null : FontWeight.bold,
                             ),
@@ -157,13 +167,13 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
                     ],
                   ),
                 ),
-                _buildActions(context, theme),
+                _buildActions(context, isDeleted, theme),
               ],
             ),
-            if (isFinished) ...[
+            if (isFinished && !isDeleted) ...[
               const SizedBox(height: 12),
               _buildPlayerControls(theme),
-            ] else ...[
+            ] else if (!isFinished) ...[
               const SizedBox(height: 20),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -215,7 +225,7 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
     }
   }
 
-  Widget _buildAlbumArt(bool isFinished, ThemeData theme) {
+  Widget _buildAlbumArt(bool isFinished, bool isDeleted, ThemeData theme) {
     final colorScheme = theme.colorScheme;
     return Container(
       width: 56,
@@ -234,41 +244,51 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
           fit: BoxFit.cover,
         ),
       ),
-      child: isFinished
-          ? Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(120),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  onPressed: _togglePlayPause,
-                ),
-              ),
-            )
-          : Container(
+      child: isDeleted 
+          ? Container(
               decoration: BoxDecoration(
                 color: Colors.black.withAlpha(150),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: widget.video.status == VideoStatus.failed
-                    ? Icon(Icons.error_outline_rounded, color: colorScheme.error, size: 24)
-                    : const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
+                child: Icon(Icons.delete_sweep_rounded, color: colorScheme.error, size: 24),
               ),
-            ),
+            )
+          : isFinished
+              ? Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(120),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      onPressed: _togglePlayPause,
+                    ),
+                  ),
+                )
+              : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(150),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: widget.video.status == VideoStatus.failed
+                        ? Icon(Icons.error_outline_rounded, color: colorScheme.error, size: 24)
+                        : const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                  ),
+                ),
     );
   }
 
@@ -327,13 +347,13 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
     );
   }
 
-  Widget _buildActions(BuildContext context, ThemeData theme) {
+  Widget _buildActions(BuildContext context, bool isDeleted, ThemeData theme) {
     final isFinished = widget.video.status == VideoStatus.finished;
     final colorScheme = theme.colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (isFinished)
+        if (isFinished && !isDeleted)
           IconButton.filledTonal(
             visualDensity: VisualDensity.compact,
             icon: Icon(Icons.folder_open_rounded, size: 18, color: colorScheme.onSurfaceVariant),

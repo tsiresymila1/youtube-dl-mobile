@@ -156,8 +156,7 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
       final yt = sl.get<YoutubeExplode>();
 
       yt.videos.get(videoId).then((video) async {
-        yt.videos.streamsClient.getManifest(video.id).then((manifest) async {
-          loaderBloc.add(LoaderEventStop());
+        yt.videos.streams.getManifest(video.id).then((manifest) async {
           if (!context.mounted) return;
           await showModalBottomSheet(
             context: context,
@@ -168,6 +167,7 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
               video: video,
             ),
           );
+          loaderBloc.add(LoaderEventStop());
         }).catchError((e) {
           if (!context.mounted) return;
           _handleError(context, e.toString(), loaderBloc);
@@ -182,6 +182,7 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
   }
 
   void _handleError(BuildContext context, String error, LoaderBloc loaderBloc) {
+    
     if (!context.mounted) return;
     AwesomeDialog(
       context: context,
