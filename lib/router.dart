@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:youtube_dl/presentation/pages/about/about_page.dart';
+import 'package:youtube_dl/presentation/pages/settings/settings_page.dart';
 import 'package:youtube_dl/presentation/pages/history/history_page.dart';
 import 'package:youtube_dl/presentation/pages/home/home_page.dart';
 import 'package:youtube_dl/presentation/pages/yt_item/yt_item.dart';
@@ -21,10 +21,10 @@ final router = GoRouter(navigatorKey: navigatorKey, routes: [
               return const HistoryPage();
             }),
         GoRoute(
-            name: 'about',
-            path: 'about',
+            name: 'settings',
+            path: 'settings',
             builder: (context, state) {
-              return const AboutPage();
+              return const SettingsPage();
             }),
         GoRoute(
             name: 'view',
@@ -32,7 +32,6 @@ final router = GoRouter(navigatorKey: navigatorKey, routes: [
             builder: (context, GoRouterState state) {
               Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
               return YtItemView(
-                controller: extra['controller'],
                 video: extra['video'],
               );
             })

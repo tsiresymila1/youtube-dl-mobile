@@ -6,9 +6,8 @@ part of 'serializable_video.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$SerializableVideoImpl _$$SerializableVideoImplFromJson(
-        Map<String, dynamic> json) =>
-    _$SerializableVideoImpl(
+_SerializableVideo _$SerializableVideoFromJson(Map<String, dynamic> json) =>
+    _SerializableVideo(
       id: VideoId.fromJson(json['id'] as Map<String, dynamic>),
       title: json['title'] as String,
       author: json['author'] as String,
@@ -24,11 +23,11 @@ _$SerializableVideoImpl _$$SerializableVideoImplFromJson(
       duration: json['duration'] == null
           ? null
           : Duration(microseconds: (json['duration'] as num).toInt()),
+      thumbnailUrl: json['thumbnailUrl'] as String,
       isLive: json['isLive'] as bool,
     );
 
-Map<String, dynamic> _$$SerializableVideoImplToJson(
-        _$SerializableVideoImpl instance) =>
+Map<String, dynamic> _$SerializableVideoToJson(_SerializableVideo instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
@@ -39,5 +38,6 @@ Map<String, dynamic> _$$SerializableVideoImplToJson(
       'publishDate': instance.publishDate?.toIso8601String(),
       'description': instance.description,
       'duration': instance.duration?.inMicroseconds,
+      'thumbnailUrl': instance.thumbnailUrl,
       'isLive': instance.isLive,
     };

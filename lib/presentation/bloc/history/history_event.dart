@@ -12,3 +12,10 @@ final class RemoveHistoryEvent extends HistoryEvent{
   final String uuid;
   RemoveHistoryEvent({required this.uuid});
 }
+
+final class UpdateHistoryEvent extends HistoryEvent {
+  final VideoItem video;
+  UpdateHistoryEvent({required this.video});
+}
+
+final class ClearHistoryEvent extends HistoryEvent {}

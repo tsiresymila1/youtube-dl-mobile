@@ -5,7 +5,7 @@ part 'serializable_video.freezed.dart';
 part 'serializable_video.g.dart';
 
 @freezed
-class SerializableVideo with _$SerializableVideo {
+abstract class SerializableVideo with _$SerializableVideo {
   const factory SerializableVideo({
     required VideoId id,
     required String title,
@@ -16,6 +16,7 @@ class SerializableVideo with _$SerializableVideo {
     DateTime? publishDate,
     required String description,
     Duration? duration,
+    required String thumbnailUrl,
     required bool isLive,
   }) = _SerializableVideo;
 
@@ -32,6 +33,7 @@ class SerializableVideo with _$SerializableVideo {
       publishDate: video.publishDate,
       description: video.description,
       duration: video.duration,
+      thumbnailUrl: video.thumbnails.highResUrl,
       isLive: video.isLive,
     );
   }
