@@ -87,7 +87,7 @@ class SettingsPage extends StatelessWidget {
                   context,
                   icon: Icons.history_edu_rounded,
                   title: "version".tr(),
-                  subtitle: "1.0.0 (${"stable".tr()})",
+                  subtitle: "2.0.0 (${"stable".tr()})",
                 ),
               ],
             ),

@@ -48,106 +48,99 @@ class HomePage extends StatelessWidget {
               ),
               child: CustomScrollView(
                 slivers: [
-                  SliverAppBar(
-                    floating: true,
-                    pinned: true,
-                    scrolledUnderElevation: 0,
-                    surfaceTintColor: Colors.transparent,
-                    expandedHeight: 140,
-                    toolbarHeight: 64,
-                    backgroundColor: Theme.of(context)
-                        .scaffoldBackgroundColor
-                        .withAlpha(200),
-                    title: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.primary,
-                                Theme.of(context).colorScheme.secondary,
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withAlpha(50),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.play_arrow_rounded,
-                              color: Colors.white, size: 20),
+                  SliverToBoxAdapter(
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(20, 64, 20, 20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Theme.of(context).colorScheme.primary.withAlpha(40),
+                            Theme.of(context).scaffoldBackgroundColor,
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          "YouDown",
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: -0.5,
-                                  ),
-                        ),
-                      ],
-                    ),
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Stack(
-                        fit: StackFit.expand,
+                      ),
+                      child: Row(
                         children: [
                           Container(
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
                                 colors: [
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withAlpha(40),
-                                  Theme.of(context).colorScheme.surface,
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context).colorScheme.secondary,
                                 ],
                               ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withAlpha(50),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
                             ),
+                            child: const Icon( Icons.play_arrow_rounded,
+                                color: Colors.white, size: 28),
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "YouDown",
+                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: -1,
+                                    ),
+                              ),
+                              Text(
+                                "ready_to_download".tr(),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    actions: [
-                      _buildAppBarAction(
-                        context,
-                        icon: Icons.cloud_download_rounded,
-                        onPressed: () => context.goNamed('history'),
-                      ),
-                      _buildAppBarAction(
-                        context,
-                        icon: Icons.settings_rounded,
-                        onPressed: () => context.goNamed('settings'),
-                      ),
-                      const SizedBox(width: 16),
-                    ],
-                    bottom: PreferredSize(
-                      preferredSize: const Size.fromHeight(72),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                        child: Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(16),
+                  ),
+                  SliverAppBar(
+                    pinned: true,
+                    floating: true,
+                    snap: true,
+                    titleSpacing: 0,
+                    centerTitle: false,
+                    scrolledUnderElevation: 0,
+                    surfaceTintColor: Colors.transparent,
+                    toolbarHeight: 50,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    title: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(10),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
-                          child: TextField(
-                            controller: searchController,
-                            onSubmitted: (keyword) {
-                              if (keyword.trim().isNotEmpty) {
-                                mutation.mutate(keyword);
-                              }
-                            },
-                            decoration: InputDecoration(
+                        ],
+                      ),
+                      child: TextField(
+                        controller: searchController,
+                        onSubmitted: (keyword) {
+                          if (keyword.trim().isNotEmpty) {
+                            mutation.mutate(keyword);
+                          }
+                        },
+                        decoration: InputDecoration(
                               hintText: 'search_hint'.tr(),
                               hintStyle: Theme.of(context)
                                   .textTheme
@@ -177,9 +170,21 @@ class HomePage extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 0),
                             ),
                           ),
-                        ),
                       ),
-                    ),
+                    
+                    actions: [
+                      _buildAppBarAction(
+                        context,
+                        icon: Icons.cloud_download_rounded,
+                        onPressed: () => context.goNamed('history'),
+                      ),
+                      _buildAppBarAction(
+                        context,
+                        icon: Icons.settings_rounded,
+                        onPressed: () => context.goNamed('settings'),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                   ),
                   if (mutation.isMutating)
                     SliverList(
@@ -316,3 +321,4 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
