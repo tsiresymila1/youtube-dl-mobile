@@ -22,9 +22,10 @@ jobs:
           distribution: 'adopt'
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v4
         with:
-          channel: stable  # Specify the Flutter version you are using
+          channel: stable
+          flutter-version: '3.38.1 '  # Specify the Flutter version you are using
 
       - name: Install dependencies
         run: flutter pub get
