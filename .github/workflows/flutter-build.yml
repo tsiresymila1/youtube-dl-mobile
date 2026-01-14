@@ -15,17 +15,17 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - name: Setup Java 8
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin' # Updated to Temurin (standard for GitHub Actions)
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
-          flutter-version-file: pubspec.yaml # Specify the Flutter version you are using
+          channel: 'stable'
+          cache: true # Enable caching for faster subsequent builds
 
       - name: Install dependencies
         run: flutter pub get
@@ -43,26 +43,20 @@ jobs:
           echo "keyAlias=${{ secrets.KEYSTORE_ALIAS }}" >> android/key.properties
           echo "storeFile=$HOME/release-keystore.jks" >> android/key.properties
 
-      - name: Build APK
+      - name: Build Project
         run: |
-          flutter build apk --release 
-          flutter build bundle
+          flutter doctor -v
+          flutter build apk --release
+          flutter build appbundle --release
 
-      - name: Upload release APK to GitHub Release
+      - name: Upload release artifacts to GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: build/app/outputs/flutter-apk/app-release.apk
+          artifacts: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
           tag: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
-
-#      - name: Upload release APK to Google Play
-#        uses: r0adkll/upload-google-play@v1
-#        with:
-#          serviceAccountJson: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}
-#          packageName: ts.mila.youtube_dl
-#          releaseFiles: build/app/outputs/bundle/release/app-release.aab
-#          mappingFile: build/app/outputs/mapping/release/mapping.txt
-#          debugSymbols: build/app/intermediates/merged_native_libs/release/out/lib
-#          track: 'production'
+          generateReleaseNotes: true
