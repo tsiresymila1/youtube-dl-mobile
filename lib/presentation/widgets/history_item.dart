@@ -244,7 +244,7 @@ class _HistoryItemState extends State<HistoryItem> {
             visualDensity: VisualDensity.compact,
             onPressed: () {
               openFileManager(
-                androidConfig: AndroidConfig(folderType: AndroidFolderType.download),
+                androidConfig: AndroidConfig(folderType: AndroidFolderType.other, folderPath: "/storage/emulated/0/Download/Youdown"),
               );
             },
             icon: Icon(Icons.folder_open_rounded, size: 18, color: colorScheme.onSurfaceVariant),

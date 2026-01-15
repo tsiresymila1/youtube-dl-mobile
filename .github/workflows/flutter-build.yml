@@ -47,16 +47,15 @@ jobs:
         run: |
           flutter doctor -v
           flutter build apk --release
-          flutter build appbundle --release
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Youdown.apk
 
       - name: Upload release artifacts to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/Youdown.apk
           tag: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
+          name: "Youdown ${{ github.ref_name }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           generateReleaseNotes: true
