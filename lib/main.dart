@@ -8,12 +8,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:youtube_dl/core/background_service.dart';
 import 'package:youtube_dl/core/log.dart';
 import 'package:youtube_dl/core/models/video_item/video_item.dart';
+import 'package:youtube_dl/core/permission.dart';
 import 'package:youtube_dl/presentation/bloc/download/download_bloc.dart';
 import 'package:youtube_dl/presentation/bloc/history/history_bloc.dart';
 import 'package:youtube_dl/presentation/bloc/loader/loader_bloc.dart';
@@ -34,7 +34,7 @@ void main() async {
   await QueryClient.initialize(
     cachePrefix: 'youtube_dl',
   );
-  await requestStoragePermission();
+
   await setupDependency();
   
   // Initialize communication port
@@ -56,15 +56,7 @@ void main() async {
   );
 }
 
-Future<void> requestStoragePermission() async {
-  logger.i('Checking storage permissions...');
-  var status = await Permission.manageExternalStorage.status;
-  if (!status.isGranted) {
-    logger.i('Requesting Manage External Storage permission...');
-    status = await Permission.manageExternalStorage.request();
-    logger.i('Manage External Storage permission status: $status');
-  }
-}
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -83,7 +75,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _requestPermissions() async {
-    await requestStoragePermission();
+    await requestPermissions(() {}, error: () {
+      logger.e("Permission denied");
+    });
     // Request notification permission for Android 13+
     await FlutterForegroundTask.requestNotificationPermission();
   }
