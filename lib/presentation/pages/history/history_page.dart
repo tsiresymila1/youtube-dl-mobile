@@ -30,16 +30,16 @@ class HistoryPage extends StatelessWidget {
             surfaceTintColor: Colors.transparent,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             expandedHeight: 140,
+            centerTitle: false,
             flexibleSpace: FlexibleSpaceBar(
               expandedTitleScale: 1.2,
               title: Text(
-                "download".tr(),
+                "download_title".tr(),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5,
                 ),
               ),
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(

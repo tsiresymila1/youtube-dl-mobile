@@ -1,6 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:youtube_dl/presentation/bloc/loader/loader_bloc.dart';
 import 'package:youtube_dl/presentation/widgets/yt_modal_sheet.dart';
 import 'package:youtube_dl/service_locator.dart';
@@ -168,6 +169,8 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
             ),
           );
           loaderBloc.add(LoaderEventStop());
+          if (!context.mounted) return;
+          context.pop();
         }).catchError((e) {
           if (!context.mounted) return;
           _handleError(context, e.toString(), loaderBloc);
@@ -182,12 +185,11 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
   }
 
   void _handleError(BuildContext context, String error, LoaderBloc loaderBloc) {
-    
+
     if (!context.mounted) return;
     AwesomeDialog(
       context: context,
-      headerAnimationLoop: false,
-      dialogType: DialogType.error,
+      dialogType: DialogType.noHeader,
       title: "error_occurred".tr(),
       desc: error,
       btnOkOnPress: () {},
@@ -201,8 +203,7 @@ class _YtModalDownloadLinkState extends State<YtModalDownloadLink> {
   void _showValidationError(BuildContext context) {
     AwesomeDialog(
       context: context,
-      headerAnimationLoop: false,
-      dialogType: DialogType.warning,
+      dialogType: DialogType.noHeader,
       title: "invalid_url".tr(),
       desc: "invalid_url".tr(),
       btnOkOnPress: () {},

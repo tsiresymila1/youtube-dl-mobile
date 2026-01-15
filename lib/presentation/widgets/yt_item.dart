@@ -50,7 +50,7 @@ class _YTItemState extends State<YTItem> {
                 if (isDownloading) {
                   context.goNamed("history");
                 } else {
-                  context.pushNamed("view", extra: {"video": widget.video});
+                  context.pushReplacementNamed("view", extra: {"video": widget.video});
                 }
               },
               borderRadius: BorderRadius.circular(20),

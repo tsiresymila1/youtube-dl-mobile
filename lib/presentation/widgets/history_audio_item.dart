@@ -87,6 +87,10 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
 
   @override
   void dispose() {
+    // Explicitly stop playback when widget is actively disposed (e.g. leaving page)
+    if (player.playing) {
+      player.stop();
+    }
     player.dispose();
     super.dispose();
   }

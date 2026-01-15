@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'log.dart';
 
 import 'package:youtube_dl/core/models/video_item/video_item.dart';
@@ -205,6 +206,13 @@ Future<String> processDownload({
             if (e.response?.statusCode == 403) {
               logger.e("403 Forbidden detected for ${item['name']}. Cancelling all downloads.");
               cancelToken.cancel("Forbidden");
+              Fluttertoast.showToast(
+                msg: "video_format_unavailable".tr(),
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.redAccent,
+                textColor: Colors.white,
+              );
               rethrow;
             }
             if (CancelToken.isCancel(e)) {

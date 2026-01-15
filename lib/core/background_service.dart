@@ -14,8 +14,11 @@ Future<void> initializeBackgroundService() async {
       channelId: 'download_service_channel',
       channelName: 'Download Service',
       channelDescription: 'Handles background downloads',
-      channelImportance: NotificationChannelImportance.LOW,
-      priority: NotificationPriority.LOW,
+      channelImportance: NotificationChannelImportance.HIGH,
+      priority: NotificationPriority.HIGH,
+      showWhen: true,
+      showBadge: true,
+      visibility: NotificationVisibility.VISIBILITY_PUBLIC,
     ),
     iosNotificationOptions: const IOSNotificationOptions(
       showNotification: true,
@@ -26,6 +29,8 @@ Future<void> initializeBackgroundService() async {
       autoRunOnBoot: true,
       allowWakeLock: true,
       allowWifiLock: true,
+      stopWithTask: false,
+      allowAutoRestart: true,
     ),
   );
 }
@@ -169,6 +174,7 @@ class DownloadTaskHandler extends TaskHandler {
   @override
   void onNotificationPressed() {
     FlutterForegroundTask.launchApp();
+    FlutterForegroundTask.sendDataToMain({'type': 'notificationPressed'});
   }
 }
 

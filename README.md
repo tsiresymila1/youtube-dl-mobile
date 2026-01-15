@@ -1,22 +1,41 @@
-# youtube_dl
+# YouDown Mobile 📱
 
-A new Flutter project to download video from youtube.
+A premium, open-source YouTube downloader built with Flutter.
 
-## Getting Started
+<div align="center">
+  <img src="Screenshot_1768458744.png" width="200" alt="Home Screen"/>
+  <img src="Screenshot_1768458751.png" width="200" alt="Search"/>
+  <img src="Screenshot_1768458772.png" width="200" alt="Download Process"/>
+  <img src="Screenshot_1768458782.png" width="200" alt="Dark Mode"/>
+</div>
 
-<img src="./Screenshot_20250110_171654.png"  alt=""/>
-<img src="./Screenshot_20250110_171726.png"  alt=""/>
-<img src="./Screenshot_20250110_171754.png"  alt=""/>
-<img src="./Screenshot_20250110_171811.png"  alt=""/>
-This project is a starting point for a Flutter application.
+## Features ✨
 
-A few resources to get you started if this is your first Flutter project:
+- **High-Quality Downloads**: Support for 4K video downloads.
+- **Audio Extraction**: Convert videos to high-quality MP3s instantly.
+- **Background Service**: Downloads continue even when the app is closed.
+- **Background Playback**: Listen to your downloaded audio/video content with screen off.
+- **Material 3 Design**: A modern, slick interface with dark mode support.
+- **Multi-Language**: Available in English and French.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Getting Started 🚀
 
+This project uses [FFmpeg](https://ffmpeg.org/) for media processing.
 
+1. Clone the repo
+2. Run `flutter pub get`
+3. Run `flutter run`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Tech Stack 🛠️
+
+- **Framework**: Flutter
+- **State Management**: Bloc / Hydrated Bloc
+- **Navigation**: GoRouter
+- **Media Processing**: FFmpeg Kit
+- **YouTube API**: Youtube Explode
+- **Local Storage**: Hive / Shared Preferences
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

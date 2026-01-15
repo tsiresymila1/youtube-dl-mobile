@@ -33,6 +33,7 @@ class _HistoryItemState extends State<HistoryItem> {
   @override
   void dispose() {
     _videoPlayerController?.dispose();
+    chewieController?.pause();
     chewieController?.dispose();
     super.dispose();
   }

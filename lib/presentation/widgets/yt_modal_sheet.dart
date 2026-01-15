@@ -299,8 +299,7 @@ class _YtModalSheetQualitySelectorState
   void _showPermissionError(BuildContext context) {
     AwesomeDialog(
       context: context,
-      headerAnimationLoop: false,
-      dialogType: DialogType.error,
+      dialogType: DialogType.noHeader,
       title: "error_occurred".tr(),
       desc: "Permission Denied",
       btnOkOnPress: () {},

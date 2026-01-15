@@ -1,5 +1,7 @@
 {
   "analyzing": "Analyzing... it may take some time",
+  "please_wait": "Please wait a few seconds",
+  "video_format_unavailable": "This video format is currently unavailable. Try another quality.",
   "download_finished": "Download finished!",
   "downloaded_at": "Downloaded at {}",
   "settings": "Settings",
@@ -43,6 +45,7 @@
   "finished": "Finished",
   "failed": "Failed",
   "download": "Download",
+  "download_title": "Downloads",
   "loading": "Loading...",
   "delete_video_title": "Delete Video?",
   "delete_video_content": "This will permanently remove the downloaded file.",

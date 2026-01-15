@@ -1,8 +1,9 @@
+import 'dart:ui';
+
 import 'package:fl_query/fl_query.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -160,6 +161,8 @@ class _MyAppState extends State<MyApp> {
         }
 
         Fluttertoast.showToast(msg: "download_finished".tr());
+      } else if (type == 'notificationPressed') {
+        router.goNamed('history');
       }
     }
   }
@@ -201,46 +204,70 @@ class _MyAppState extends State<MyApp> {
                         if (state is LoaderStateLoading) {
                           showDialog(
                             context: navigatorKey.currentState!.context,
-                            barrierDismissible: true,
+                            barrierDismissible: false,
                             builder: (ct) {
-                              return Material(
-                                color: Colors.transparent,
-                                child: PopScope(
-                                  canPop: true,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(32),
+                              return PopScope(
+                                canPop: true,
+                                child: Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(28),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                                       child: Container(
-                                        padding: const EdgeInsets.all(32),
+                                        padding: const EdgeInsets.all(40),
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).brightness == Brightness.dark 
-                                              ? Colors.black87 
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.circular(24),
+                                          color: Theme.of(context).colorScheme.surface.withAlpha(200),
+                                          borderRadius: BorderRadius.circular(28),
+                                          border: Border.all(
+                                            color: Theme.of(context).colorScheme.outlineVariant.withAlpha(100),
+                                            width: 1,
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
                                               color: Colors.black.withAlpha(20),
-                                              blurRadius: 20,
-                                              spreadRadius: 5,
+                                              blurRadius: 30,
+                                              spreadRadius: 10,
                                             ),
                                           ],
                                         ),
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            SpinKitFadingCircle(
-                                              size: 50,
-                                              color: Theme.of(context).colorScheme.primary,
+                                            Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 70,
+                                                  height: 70,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 3,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                                      Theme.of(context).colorScheme.primary,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Icon(
+                                                  Icons.analytics_rounded,
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                  size: 30,
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(height: 16),
+                                            const SizedBox(height: 32),
                                             Text(
                                               "analyzing".tr(),
                                               textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                decoration: TextDecoration.none,
-                                                fontSize: 14,
+                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.grey,
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "please_wait".tr(),
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                               ),
                                             ),
                                           ],
