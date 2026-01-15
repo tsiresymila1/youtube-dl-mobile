@@ -66,21 +66,22 @@ class _HistoryAudioItemState extends State<HistoryAudioItem>
         setState(() {
           isPlaying = state.playing;
         });
+        if (state.processingState == ProcessingState.completed) {
+          player.seek(Duration.zero);
+          player.pause();
+          setState(() {
+            position = Duration.zero;
+            isPlaying = false;
+          });
+        }
       }
     });
+
     player.positionStream.listen((event) {
       if (!mounted) return;
-      if (event == duration) {
-        player.stop();
-        player.seek(Duration());
-        setState(() {
-          position = Duration();
-        });
-      } else {
-        setState(() {
-          position = event;
-        });
-      }
+      setState(() {
+        position = event;
+      });
     });
   }
 }

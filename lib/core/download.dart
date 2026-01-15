@@ -123,13 +123,18 @@ Future<String> processDownload({
 }) async {
   final dio = Dio();
   final tempDir = await getTemporaryDirectory();
-  logger.i('Starting processDownload for $name, destination: /storage/emulated/0/Download');
+  Directory downloadDir;
+  if (Platform.isAndroid) {
+    downloadDir = Directory('/storage/emulated/0/Download/Youdown');
+  } else {
+    final docDir = await getApplicationDocumentsDirectory();
+    downloadDir = Directory('${docDir.path}/Youdown');
+  }
 
-  // Final download destination
-  final downloadDir = Directory('/storage/emulated/0/Download/Youdown');
   if (!downloadDir.existsSync()) {
     downloadDir.createSync(recursive: true);
   }
+  logger.i('Starting processDownload for $name, destination: ${downloadDir.path}');
 
   Map<String, double> progresses = {};
   for (var f in futures) {

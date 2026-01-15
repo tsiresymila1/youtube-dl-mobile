@@ -274,6 +274,8 @@ class _HistoryItemState extends State<HistoryItem> {
           autoPlay: autoPlay,
           looping: false,
           allowFullScreen: true,
+          showControls: true,
+          showControlsOnInitialize: false,
           materialProgressColors: ChewieProgressColors(
             playedColor: Theme.of(context).colorScheme.primary,
             handleColor: Theme.of(context).colorScheme.primary,
