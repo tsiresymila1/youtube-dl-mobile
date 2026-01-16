@@ -8,6 +8,12 @@ import 'package:video_player/video_player.dart';
 import 'package:youtube_dl/core/models/video_item/video_item.dart';
 import 'package:youtube_dl/presentation/bloc/history/history_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:youtube_dl/core/log.dart';
+import 'package:youtube_dl/presentation/bloc/loader/loader_bloc.dart';
+import 'package:youtube_dl/presentation/widgets/yt_modal_sheet.dart';
+import 'package:youtube_dl/service_locator.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class HistoryItem extends StatefulWidget {
   final VideoItem video;
@@ -251,6 +257,13 @@ class _HistoryItemState extends State<HistoryItem> {
           ),
           const SizedBox(width: 4),
         ],
+        if (widget.video.status == VideoStatus.failed || isDeleted)
+          IconButton.filledTonal(
+            visualDensity: VisualDensity.compact,
+            onPressed: () => _handleRetry(),
+            icon: Icon(Icons.refresh_rounded, color: colorScheme.primary, size: 18),
+          ),
+        const SizedBox(width: 4),
         IconButton.filledTonal(
           visualDensity: VisualDensity.compact,
           onPressed: () => _confirmDelete(context, theme),
@@ -265,6 +278,19 @@ class _HistoryItemState extends State<HistoryItem> {
     
     _videoPlayerController?.dispose();
     _videoPlayerController = VideoPlayerController.file(File(widget.video.path));
+    
+    _videoPlayerController?.addListener(() {
+      if (!mounted || _videoPlayerController == null) return;
+      final value = _videoPlayerController!.value;
+      if (value.isInitialized && 
+          !value.isPlaying && 
+          value.position >= value.duration && 
+          value.duration != Duration.zero) {
+        _videoPlayerController!.seekTo(Duration.zero);
+        _videoPlayerController!.pause();
+      }
+    });
+
     _videoPlayerController?.initialize().then((_) {
       if (!mounted) return;
       setState(() {
@@ -306,5 +332,54 @@ class _HistoryItemState extends State<HistoryItem> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleRetry() async {
+    final loaderBloc = context.read<LoaderBloc>();
+    loaderBloc.add(LoaderEventLoading());
+    final yt = sl.get<YoutubeExplode>();
+
+    // Use the video ID from the saved video item
+    final videoId = widget.video.video.id;
+
+    try {
+      final video = await yt.videos.get(videoId);
+      final manifest = await yt.videos.streams.getManifest(video.id);
+
+      if (!mounted) return;
+
+      // If we are retrying, we might want to suggest the same options or just let user pick again.
+      // Showing the quality selector is the safest bet to get a fresh download URL.
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => YtModalSheetQualitySelector(
+          manifest: manifest,
+          video: video,
+        ),
+      );
+
+      loaderBloc.add(LoaderEventStop());
+    } catch (e) {
+      if (!mounted) return;
+      _handleError(context, e.toString(), loaderBloc);
+    }
+  }
+
+  void _handleError(BuildContext context, String error, LoaderBloc loaderBloc) {
+    logger.e(error);
+    if (!mounted) return;
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.noHeader,
+      title: "error_occurred".tr(),
+      desc: error,
+      btnOkOnPress: () {},
+      btnOkColor: Colors.redAccent,
+      useRootNavigator: true,
+    ).show().then((_) {
+      loaderBloc.add(LoaderEventStop());
+    });
   }
 }
